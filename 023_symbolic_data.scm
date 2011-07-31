@@ -597,6 +597,32 @@
 (define (make-tree entry left right)
   (list entry left right))
 
+;;(display "make-tree() test cases")
+;;(newline)
+;;(display (make-tree 2
+;;                    (make-tree 1 '() '())
+;;                    (make-tree 3 '() '())))
+;;(newline)
+;;(display (make-tree 2 
+;;                    (make-tree 1 '() '())
+;;                    (make-tree (make-tree 3 '() '())
+;;                               4 
+;;                               '())))
+;;(newline)
+;;(define test-tree (make-tree 2 
+;;                             (make-tree 1 '() '())
+;;                             (make-tree (make-tree 3 '() '())
+;;                                        4 
+;;                                        '())))
+;;(display (entry test-tree))
+;;(newline)
+;;(display (left-branch test-tree))
+;;(newline)
+;;(display (right-branch test-tree))
+;;(newline)
+;;(display (right-branch (right-branch test-tree)))
+;;(newline)
+
 ;; No we can write element-of-tree? procedure using the strategy, described above:
 (define (element-of-tree? x tree)
   (cond ((null? tree) #f)
@@ -605,6 +631,18 @@
          (element-of-tree? x (left-branch tree)))
         ((> x (entry tree))
          (element-of-tree? x (right-branch tree)))))
+
+;;(display "element-of-tree? test cases")
+;;(newline)
+;;(define test-tree (make-tree 2 
+;;                             (make-tree 1 '() '())
+;;                             (make-tree 4 
+;;                                        (make-tree 3 '() '())
+;;                                        '())))
+;;(display (element-of-tree? 3 test-tree))
+;;(newline)
+;;(display (element-of-tree? 4 test-tree))
+;;(newline)
 
 ;; To adjoin a intem into a tree we compare x with the node entry to determine
 ;; whether x should be added to the left or right branch. If x is equal to the
