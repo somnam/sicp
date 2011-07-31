@@ -691,4 +691,17 @@
 
   (copy-to-list tree '()))
 
+;;(display "tree-to-list() test cases")
+;;(newline)
+;;(display (tree-to-list (make-tree 1 '() (make-tree 2 '() '()))))
+;;(newline)
+;;(display (tree-to-list (adjoin-tree 5 
+;;                                    (adjoin-tree 4 
+;;                                                 (adjoin-tree 3 
+;;                                                              (adjoin-tree 2 
+;;                                                                           (make-tree 1 
+;;                                                                                      '() 
+;;                                                                                      '())))))))
+;;(newline)
+
 ;; The following procedure converts an ordered list into a balanced binary tree.
