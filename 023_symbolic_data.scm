@@ -660,6 +660,20 @@
                     (left-branch tree)
                     (adjoin-tree x (right-branch tree))))))
 
+;;(display "adjoin-tree() test cases")
+;;(newline)
+;;(define test-tree (make-tree 1 '() '()))
+;;(display (adjoin-tree 2 test-tree))
+;;(newline)
+;;(display (adjoin-tree 3 test-tree))
+;;(newline)
+;;(display (adjoin-tree 4 test-tree))
+;;(newline)
+;;(display (adjoin-tree -1 test-tree))
+;;(newline)
+;;(display (adjoin-tree 5 (adjoin-tree 4 (adjoin-tree 3 (adjoin-tree 2 test-tree)))))
+;;(newline)
+
 ;; Adjoining may produce an unbalanced tree as result. One way to solve this
 ;; problem is to create a procedure, that transforms an arbitrary tree into
 ;; a balanced tree with the same elements. We can perform this operation after
