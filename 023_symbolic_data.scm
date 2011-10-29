@@ -1,3 +1,5 @@
+(define (say input) (display input) (newline))
+
 ;; 2.3 Symbolic data
 ;; Here we introduce the ability to work with arbitrary symbols as data.
 
@@ -880,8 +882,8 @@
 ;; symbol.
 ;; Decide on next move (left or right)
 (define (choose-branch bit branch)
-  (define (left-branch (car tree)))
-  (define (right-branch (cadr tree)))
+  (define (left-branch tree) (car tree))
+  (define (right-branch tree) (cadr tree))
 
   (cond ((= bit 0) (left-branch branch))
         ((= bit 1) (right-branch branch))
@@ -901,3 +903,17 @@
                     (decode-branch (cdr bits) tree))
               (decode-branch (cdr bits) next-branch)))))
   (decode-branch bits tree))
+
+;;(say "decode-huffman-tree test cases")
+;;(define test-bits '(0 0 0 1 1))
+;;(define test-huffman-tree (make-huffman-tree (make-huffman-tree (make-leaf 'A 5)
+;;                                                                (make-leaf 'B 6))
+;;                                             (make-leaf 'C 3)))
+;;(say (decode-huffman-tree test-bits
+;;                          test-huffman-tree))
+;;(define test-bits '(0 1 0 0 1 1))
+;;(say (decode-huffman-tree test-bits
+;;                          test-huffman-tree))
+;;(define test-bits '(0 1 0 1 0 1 0 1 1))
+;;(say (decode-huffman-tree test-bits
+;;                          test-huffman-tree))
