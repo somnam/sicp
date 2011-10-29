@@ -881,12 +881,11 @@
 ;; at which point we start over from the root of the tree to find the next
 ;; symbol.
 ;; Decide on next move (left or right)
+(define (huffman-left-branch tree) (car tree))
+(define (huffman-right-branch tree) (cadr tree))
 (define (choose-branch bit branch)
-  (define (left-branch tree) (car tree))
-  (define (right-branch tree) (cadr tree))
-
-  (cond ((= bit 0) (left-branch branch))
-        ((= bit 1) (right-branch branch))
+  (cond ((= bit 0) (huffman-left-branch branch))
+        ((= bit 1) (huffman-right-branch branch))
         (else (display "Error! Bad bit: ")
               (display bit)
               (newline))))
@@ -917,3 +916,66 @@
 ;;(define test-bits '(0 1 0 1 0 1 0 1 1))
 ;;(say (decode-huffman-tree test-bits
 ;;                          test-huffman-tree))
+
+;; Exercise 2.67
+;; DONE
+
+;; Exercise 2.68
+;; Write 'encode-symbol' procedure.
+
+;; Check if symbol is supported by encoding
+(define (is-symbol-defined symbol symbols)
+  (cond ((null? symbols) #f)
+        ((eq? symbol (car symbols)) #t)
+        (else (is-symbol-defined symbol (cdr symbols)))))
+
+;;(say "is-symbol-defined test cases")
+;;(say (is-symbol-defined 'A '()))
+;;(say (is-symbol-defined 'C '(A B C D)))
+;;(say (is-symbol-defined 'D '(A B C)))
+
+;; Encode given symbol
+(define (encode-symbol symbol tree)
+  ;; We reached a leaf, the symbol is encoded
+  (cond ((leaf? tree) '())
+        ;; Symbol is defned on left branch
+        ((is-symbol-defined symbol
+                            (huffman-symbols (huffman-left-branch tree)))
+         ;; Add 0 to encode set
+         (cons 0 (encode-symbol symbol
+                                  (huffman-left-branch tree))))
+        ;; Symbol is defined on right branch
+        ((is-symbol-defined symbol
+                            (huffman-symbols (huffman-right-branch tree)))
+         ;; Add 1 to encode set
+         (cons 1 (encode-symbol symbol
+                                  (huffman-right-branch tree))))
+        ;; Symbol not supported
+        (else (display "Error! Symbol not supported: ")
+              (display symbol)
+              (newline))))
+
+;;(say "encode-symbol test cases")
+;;(define test-huffman-tree (make-huffman-tree (make-huffman-tree (make-leaf 'A 5)
+;;                                                                (make-leaf 'B 6))
+;;                                             (make-leaf 'C 3)))
+;;(say (encode-symbol 'A test-huffman-tree))
+;;(say (encode-symbol 'B test-huffman-tree))
+;;(say (encode-symbol 'C test-huffman-tree))
+;;(say (encode-symbol 'D test-huffman-tree))
+
+;; Encode given message
+(define (encode msg tree)
+  (if (or (null? msg) (null? tree))
+      '()
+      (append (encode-symbol (car msg) tree)
+              (encode (cdr msg) tree))))
+;;(say "encode test cases")
+;;(define test-huffman-tree (make-huffman-tree (make-huffman-tree (make-leaf 'A 5)
+;;                                                                (make-leaf 'B 6))
+;;                                             (make-leaf 'C 3)))
+;;(say (encode '(A) test-huffman-tree))
+;;(say (encode '(A C) test-huffman-tree))
+;;(say (encode '(A) test-huffman-tree))
+;;(say (encode '(A B C) test-huffman-tree))
+;;(say (encode '(A B C C B A C B C) test-huffman-tree))
