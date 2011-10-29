@@ -979,3 +979,9 @@
 ;;(say (encode '(A) test-huffman-tree))
 ;;(say (encode '(A B C) test-huffman-tree))
 ;;(say (encode '(A B C C B A C B C) test-huffman-tree))
+
+;; Exercise 2.69
+;; TODO
+
+;; Exercise 2.70
+;; TODO
