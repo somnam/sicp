@@ -679,6 +679,7 @@
 ;; a balanced tree with the same elements. We can perform this operation after
 ;; every few adjoin-tree operations to keep our set in balance.
 
+;; Exercise 2.63
 ;; The following procedure converts a binary tree to a list:
 (define (tree-to-list tree)
   (define (copy-to-list tree res)
@@ -704,4 +705,86 @@
 ;;                                                                                      '())))))))
 ;;(newline)
 
+;; Exercise 2.64
 ;; The following procedure converts an ordered list into a balanced binary tree.
+(define (list-to-tree-old elements)
+  (define (partial-tree elements n)
+    (if (= n 0)
+        ;; All list elements processed - return empty tree and remainig elements
+        (cons '() elements)
+        ;; Process 'n' list element
+        ;; Get half of the number of list elements before n'th one
+        (let ((left-size (quotient (- n 1) 2)))
+          ;; Create partial tree for 'left-size' no. of elements
+          (let ((left-result (partial-tree elements
+                                           left-size)))
+            ;; Get tree from result
+            (let ((left-tree (car left-result))
+                  ;; Get remainig list elements that aren't in result tree
+                  (non-left-elements (cdr left-result))
+                  ;; Get number of remaining elements
+                  (right-size (- n (+ left-size 1))))
+              ;; Get first element from list of remaining elements
+              (let ((this-entry (car non-left-elements))
+                    ;; Create partial tree for 'right-size' no of elements
+                    (right-result (partial-tree (cdr non-left-elements)
+                                                right-size)))
+                ;; Get tree from result
+                (let ((right-tree (car right-result))
+                      ;; Get remainig elements
+                      (remaining-elements (cdr right-result)))
+                  ;; Build tree:
+                  ;; - root node: first element from list of remainig elements
+                  ;; - left node: left tree
+                  ;; - right node: right tree
+                  (cons (make-tree this-entry left-tree right-tree)
+                        remaining-elements))))))))
+
+  (car (partial-tree elements
+                     (length elements))))
+
+;; Code cleanup
+(define (list-to-tree elements)
+  (define (partial-tree elements n)
+    (if (= n 0)
+        ;; All list elements processed - return empty tree and remainig elements
+        (cons '() elements)
+        (let* (
+               ;; Get half of the number of list elements before n'th one
+               (left-size (quotient (- n 1) 2))
+               ;; Create partial tree for 'left-size' part of elements
+               (left-result (partial-tree elements left-size))
+               ;; Get tree from result
+               (left-tree (car left-result))
+               ;; Get remainig list elements that aren't in result tree
+               (remaining-elements (cdr left-result))
+               ;; Get number of remaining elements
+               (right-size (- n (+ left-size 1)))
+               ;; Create partial tree for 'right-size' no of elements
+               (right-result (partial-tree (cdr remaining-elements) right-size))
+               ;; Root node of created tree:
+               ;; first element from list of remaining elements
+               (root-node (car remaining-elements))
+               ;; Get tree from result
+               (right-tree (car right-result))
+               ;; Get remainig elements
+               (remaining-elements (cdr right-result)))
+          ;; Build tree:
+          ;; - root node: first element from list of remainig elements
+          ;; - left node: left tree
+          ;; - right node: right tree
+          (cons (make-tree root-node left-tree right-tree)
+                remaining-elements))))
+
+  (car (partial-tree elements
+                     (length elements))))
+
+;;(display "list-to-tree() test cases")
+;;(newline)
+;;(display (list-to-tree '(1 2 3 4 5 6 7)))
+;;(newline)
+;;(display (list-to-tree '(7 6 5 4 3 2 1)))
+;;(newline)
+
+;; Exercise 2.65 TODO
+
