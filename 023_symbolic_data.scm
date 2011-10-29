@@ -788,3 +788,116 @@
 
 ;; Exercise 2.65 TODO
 
+;; Sets and information retrieval
+(define (lookup given-key set)
+  (define (key cell)
+    (if (null? cell) '() (car cell)))
+
+  (define (val cell)
+    (if (null? cell) '() (cadr cell)))
+
+  (cond ((null? set) #f)
+        ((equal? given-key (key (car set)))
+         (val (car set)))
+        (else (lookup given-key (cdr set)))))
+
+;;(display "lookup() test cases")
+;;(newline)
+;;(define set-of-records (list '(a 1) '(b 2) '(c 3)))
+;;(display (lookup 'b set-of-records))
+;;(newline)
+;;(display (lookup 'c set-of-records))
+;;(newline)
+;;(display (lookup 'd set-of-records))
+;;(newline)
+;;(display (lookup 'z set-of-records))
+;;(newline)
+
+;; Exercise 2.66 TODO
+
+;; Huffman trees
+
+;; Leaves of the tree are represented by a list, consisting of the following:
+;; - 'leaf' symbol
+;; - real symbol at the leaf
+;; - weight
+(define (make-leaf symbol weight)
+  (list 'leaf symbol weight))
+(define (leaf? object)
+  (eq? 'leaf (car object)))
+(define (leaf-symbol object)
+  (cadr object))
+(define (leaf-weight object)
+  (caddr object))
+
+;;(display "leaf test cases")
+;;(newline)
+;;(define test-leaf (make-leaf 'A 10))
+;;(display (leaf? test-leaf))
+;;(newline)
+;;(display (leaf-symbol test-leaf))
+;;(newline)
+;;(display (leaf-weight test-leaf))
+;;(newline)
+
+;; A general tree will be a list of left branch, right branch, a set of symbols
+;; and a weight. The set of symbols will be a list of symbols. When we merge two
+;; nodes, we obtaing the weight of the tree as a sum of the weights of the nodes
+;; and the set of symbols as the union of the sets of symbols for the nodes.
+;; Using the following selectors:
+(define (huffman-symbols tree)
+  (if (leaf? tree)
+      (cons (leaf-symbol tree) '())
+      (caddr tree)))
+(define (huffman-weight tree)
+  (if (leaf? tree)
+      (leaf-weight tree)
+      (cadddr tree)))
+;; We can generate the tree:
+(define (make-huffman-tree left right)
+  (list left
+        right
+        (append (huffman-symbols left)
+                (huffman-symbols right))
+        (+ (huffman-weight left)
+           (huffman-weight right))))
+
+;;(display "make-huffman-tree test cases")
+;;(newline)
+;;(define test-left-leaf (make-leaf 'A 5))
+;;(define test-right-leaf (make-leaf 'B 6))
+;;(define test-huffman-tree (make-huffman-tree test-left-leaf
+;;                                             test-right-leaf))
+;;(display  (make-huffman-tree test-huffman-tree
+;;                             (make-leaf 'C 3)))
+;;(newline)
+
+;; The decoding procedure
+;; To decode a Huffman tree, we begin at the root node and use the successive
+;; zeros and ones of the bit sequence to determine whether to move left or
+;; right. Each time we come to a leaf, we generated a new symbol in the message,
+;; at which point we start over from the root of the tree to find the next
+;; symbol.
+;; Decide on next move (left or right)
+(define (choose-branch bit branch)
+  (define (left-branch (car tree)))
+  (define (right-branch (cadr tree)))
+
+  (cond ((= bit 0) (left-branch branch))
+        ((= bit 1) (right-branch branch))
+        (else (display "Error! Bad bit: ")
+              (display bit)
+              (newline))))
+
+;; The following procedure implements the decoding algorithm. As arguments It
+;; takes a list of zeros and ones together with a Huffman tree.
+(define (decode-huffman-tree bits tree)
+  (define (decode-branch bits branch)
+    (if (null? bits)
+        '()
+        (let ((next-branch (choose-branch (car bits) branch)))
+          (if (leaf? next-branch)
+              (cons (leaf-symbol next-branch)
+                    (decode-branch (cdr bits) tree))
+              (decode-branch (cdr bits) next-branch)))))
+  (decode-branch bits tree))
