@@ -78,8 +78,8 @@
 ;; Assume that operations on complex numbers are implemented in terms of four
 ;; selectors: real-part, imag-part, magnitude, angle. Also assume that we have
 ;; two procedures for constructing complex numers: 
-;; make-from-rect-form  - returns complex number with real and imaginary parts
-;; make-from-polar-form - returns complex number with magnitude and angle
+;; make-from-real-imag - returns complex number with real and imaginary parts
+;; make-from-mag-ang   - returns complex number with magnitude and angle
 ;; These procedures have a property, that for any complex number 'z' produce
 ;; complex numbers, that are equal to z.
 ;; Given following trigonometric relations:
@@ -142,3 +142,33 @@
                          angle-rect
                          angle-polar
                          "Error! Unknown type for angle part."))
+
+;; Constructing complex numbers is very straightforward. We construct rectangular
+;; numbers when we have real and imaginary parts and polar numbers when we have
+;; magnitudes and angles:
+(define (make-from-real-imag x y)
+  (make-from-real-imag-rect x y))
+(define (make-from-mag-ang r a)
+  (make-from-mag-ang-polar r a))
+
+;; To implement arithmetic operations we call generic procedures:
+(define (add-complex z1 z2)
+  (make-from-real-imag (+ (real-part-gen z1) (real-part-gen z2))
+                       (+ (imag-part-gen z1) (imag-part-gen z2))))
+(define (sub-complex z1 z2)
+  (make-from-real-imag (- (real-part-gen z1) (real-part-gen z2))
+                       (- (imag-part-gen z1) (imag-part-gen z2))))
+(define (mul-complex z1 z2)
+  (make-from-mag-ang (* (magnitude-gen z1) (magnitude-gen z2))
+                     (+ (angle-gen z1) (angle-gen z2))))
+(define (div-complex z1 z2)
+  (make-from-mag-ang (/ (magnitude-gen z2) (magnitude-gen z2))
+                     (- (angle-gen z2) (angle-gen z2))))
+
+;; The complex number system has been divided into three parts:
+;; - arithmetic operations using generic selectors
+;; - polar implementation
+;; - rectangular implementation
+;; Since all data objects are tagged with their types, the selectors operate on
+;; them in a generic manner.
+
