@@ -172,3 +172,51 @@
 ;; Since all data objects are tagged with their types, the selectors operate on
 ;; them in a generic manner.
 
+;; 2.4.3 Data-directed programming and addivity
+;; The general strategy of checking the type of datum and calling an appropriate
+;; procedure is called dispatching on type. But implementing the dispatch as done
+;; earlier with complex numbers has two weaknesses:
+;; - generic interface procedures (real-part, imag-part etc.) must know about all 
+;;   the different representations
+;; - even though the individual representations can be designed separately, we must
+;;   guarantee that no two procedures in the entire system have the same name
+;; The issue underlying both of these weaknesses is that the technique for implementing
+;; generic interfaces is not additive. We need to modularize the system desing by using
+;; the data-direct programming technique. When dealing with a set of operations that
+;; are common to a set of different types we are in fact looking at a two-dimensional
+;; table with possible operations on one axis and possible types on the other axis. 
+;; The entries in the table are procedures, that implement each operation for each
+;; type of argument present. 
+
+;; In this method we can implement the interface as a single procedure that looks
+;; up the combination of the operation name and argument type in the table to find
+;; the correct procedure to apply. To add a new representation package to the system
+;; we need only to add new entries in the table. The key idea of data-directed
+;; programming is to handle generic operations in programs by dealing explicitly
+;; with operation-and-type tables. The required dispatching is organized on type
+;; by having each operation take care of its own dispatching. This decomposes the
+;; operation-and-type table into rows, with each generic operation procedure
+;; representing a row in the table.
+
+;; An alternative implementation strategy is to decompose the table into columns
+;; and instead of using 'inteligent operations' that dispatch on data types, we
+;; use 'inteligent data objects' that dispatch on operation names. A rectangular
+;; number can be a data object, which is represented as a procedure. The procedure
+;; takes as input the required operation name and performs it. E. g.
+(define (make-from-real-imag x y)
+  (define (dispatch op)
+    (cond ((eq? op 'real-part) x)
+          ((eq? op 'imag-part) y)
+          ((eq? op 'magnitude)
+           (sqrt (+ (square x) (square y))))
+          ((eq? op 'angle)
+           (atan y x))
+          (else (say "Error! Unknown operation."))))
+  dispatch)
+;; The value returned by this procedure is itself a procedure.
+;; The corresponding apply-generic procedure now feeds the operations name 
+;; to the data object and lets the object do the work:
+(define (apply-generic op arg) (arg op))
+
+;; This style of programming is called message passing. The data object is an
+;; entity that receives the requested operation name as a message.
