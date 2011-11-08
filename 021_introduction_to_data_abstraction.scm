@@ -59,12 +59,10 @@
               (/ d g)))))
 
 ;; Get numerator part
-(define (numer x)
-  (car x))
+(define (numer x) (car x))
 
 ;; Get denominator part
-(define (denom x)
-  (cdr x))
+(define (denom x) (cdr x))
 
 ;; Print rational number
 (define (print-rat x)
