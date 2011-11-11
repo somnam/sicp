@@ -205,7 +205,7 @@
   (define (make-from-mag-ang r a)
     (cons (* r (cos a)) (* r (sin a))))
   ;; interface to the rest of the system
-  (define (tag x) (attach-tag 'rectangular x))
+  (define (tag x) (set-tag 'rectangular x))
   (put-opt 'real-part '(rectangular) real-part)
   (put-opt 'imag-part '(rectangular) imag-part)
   (put-opt 'magnitude '(rectangular) magnitude)
@@ -230,7 +230,7 @@
     (cons (sqrt (+ (square x) (square y)))
           (atan y x)))
   ;; interface to the rest of the system
-  (define (tag x) (attach-tag 'polar x))
+  (define (tag x) (set-tag 'polar x))
   (put-opt 'real-part '(polar) real-part)
   (put-opt 'imag-part '(polar) imag-part)
   (put-opt 'magnitude '(polar) magnitude)
@@ -296,6 +296,17 @@
 (install-complex-arithmetic-package)
 
 ;; Test cases
+;;
 ;;(define scheme-number-t1 (make-scheme-numer 5))
 ;;(define scheme-number-t2 (make-scheme-numer 10))
 ;;(say (get-content (add scheme-number-t1 scheme-number-t2)))
+;;(say (get-content (sub scheme-number-t1 scheme-number-t2)))
+;;(say (get-content (mul scheme-number-t1 scheme-number-t2)))
+;;(say (get-content (div scheme-number-t1 scheme-number-t2)))
+;;
+;;(define rational-number-t1 (make-rational 5 7))
+;;(define rational-number-t2 (make-rational 7 4))
+;;(say (get-content (add rational-number-t1 rational-number-t2)))
+;;(say (get-content (sub rational-number-t1 rational-number-t2)))
+;;(say (get-content (mul rational-number-t1 rational-number-t2)))
+;;(say (get-content (div rational-number-t1 rational-number-t2)))
