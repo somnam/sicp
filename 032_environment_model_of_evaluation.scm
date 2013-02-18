@@ -76,3 +76,60 @@
 
 ;; 3.2.2 Applying simple procedures
 ;; Lookup in book :).
+
+;; 3.2.3 Frames as the repository of Local State
+;; Procedures and assignment can be used to represent objects with local state.
+;; Consider the withdrawal processor created by calling the procedure:
+(define (make-withdrawal balance)
+  (lambda (amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds.")))
+;; It can be also written as:
+(define make-withdrawal 
+  (lambda (balance)
+    (lambda (amount)
+      (if (>= balance amount)
+          (begin (set! balance (- balance amount))
+                 balance)
+          "Insufficient funds."))))
+;; The result of defining the make-withdrawal procedure produces a proceudure
+;; object that contains a pointer to the global environment. The body of the
+;; procedure is itself a lambda. The interesting part of the computation
+;; happens when we apply the procedure make-withdrawal to an argument:
+(define W1 (make-withdrawal 100))
+;; We begin by setting up an environment E1 in which the formal parameter
+;; 'balance' is bound to the argument 100. Within this environment we evaluate
+;; the body of make-withdrawal - the lambda expression. This constructs a new
+;; procedure object, whose code is specified by the lambda and whose environment
+;; is E1, the environment in which the lambda was evaluated to produce the 
+;; procedure. The resulting procedure object is bound to W1 - the global
+;; environment, since the define itself is being evaluated in the global
+;; environment. This procedure is a pair consisting of the lambda code and
+;; a pointer to the E1 environment, in which balance is bound to value of 100.
+;; Now we can analyze what happens when W1 is applied to an argument:
+(say (W1 50))
+;; We begin by constructing a frame in environment E1, in which the 'amount'
+;; parameter is bound to the argument 50. The frame is constructed in E1 
+;; because this is the environment that is specified by the W1 procedure object.
+;; Within this environment we evaluate the body of the procedure. The expression
+;; being evaluated references both amount and balance. Amount will be found in
+;; the first frame of E1, while balance will be found by following the enclosing
+;; environment pointer to E1.
+;; When set! is executed the binding of balance in E1 is changed. At the end to
+;; W1, balance is set to 50 and the frame, that contains balance is still 
+;; pointed to by the procedure object W1. The frame that binds amount is no 
+;; longer relevant, since the procedure call that constructed it (W1 50) has
+;; terminated. There are no more pointers to that frame from other parts of the
+;; environment. 
+;; The next time W1 is called a new frame will be built, that binds amount and
+;; whose enclosing environment is E1. We see that E1 serves as a place, that 
+;; holds the local state variable for the procedure object W1.
+;; When we create a second withdrawal object:
+(define W2 (make-withdrawal 100))
+;; creates the procedure object W2, that contains code and a pointer to the E2
+;; environment. The environment contains a frame with its own local binding for
+;; balance. W1 and W2 have the same code but reference state variables in 
+;; different environments.
+
